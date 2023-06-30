@@ -5,7 +5,6 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
-
 # This is a class that describes the database
 class Recipe(Base):
     __tablename__ = 'recipe'
@@ -34,10 +33,44 @@ session = Session()
 d = {}
 
 
-def search_recipes(app_id, app_key):
+def main():
+    print("Welcome to the Recipe Finder!")
+    choice = input("Would you like to:\n1. Look at saved recipes\n2. Find a new recipe\nEnter 1 or 2: ")
+
+    if choice == "1":
+        show_saved_recipes()
+    elif choice == "2":
+        find_new_recipe()
+    else:
+        print("Invalid choice. Please enter 1 or 2.")
+
+def show_saved_recipes():
+    results = session.query(Recipe).all()
+    if results:
+        print('Saved Recipes:')
+        print(results)
+    else:
+        print("No saved recipes found.")
+
+def find_new_recipe():
+    app_id = "bd853ae1"
+    app_key = "8c82c5e3565f991053475e31185e39d0	"
+
+    while True:
+        ingredients = [input("Enter the ingredients you have at your disposal (separated by commas): ")]
+
+        search_recipes(app_id, app_key, ingredients)
+        # url_picker()
+
+        choice = input("Do you want to input different ingredients? (y/n): ")
+        if choice.lower() != 'y':
+            url_picker()
+            break
+
+def search_recipes(app_id, app_key, ingredients):
     url = "https://api.edamam.com/search"
 
-    ingredients = [input("Enter the ingredients you have at your disposal(separated by commas):")]
+    #ingredients = [input("Enter the ingredients you have at your disposal(separated by commas):")]
 
     params = {
         "q": ",".join(ingredients),
@@ -69,7 +102,7 @@ def search_recipes(app_id, app_key):
         print(f"Error: Unable to fetch recipes. Status code: {response.status_code}")
 
 
-# This prompts the user to select a choice from the options given
+
 def url_picker():
     x = input("Which recipe would you like? (Pick a number)")
     # checks to see if the input is a valid number
@@ -99,17 +132,6 @@ def url_picker():
                 print("Sorry, no matches found. Please select another number")
 
 
-Id = "bd853ae1"
-key = "8c82c5e3565f991053475e31185e39d0	"
-# ingredients = ["Salmon", "Rice"]
 
-results = session.query(Recipe).all()
-if results:
-    print('Previous Recipes:')
-    print(results)
-
-search_recipes(Id, key)
-url_picker()
-
-#choice = input("What would you like to do?"
-#f" 1. Look at the saved recipes or 2. Find a new recipe" )
+if __name__ == "__main__":
+    main()
